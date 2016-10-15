@@ -45,7 +45,7 @@ var allimgs = [
     $scope.onDoubleTap = function($index) {
       actionImgShow.show({
         "larImgs": arrImgs,
-        //"larImgs": allimgs,配置成这个也是可以的，只是图片没有预加载，每次放大预览都需要从新加载图片 
+        //"larImgs": allimgs,配置成这个也是可以的，只是图片没有预加载，每次放大预览都需要重新加载图片 
         "currentImg": $index,
         imgClose : function() {
           actionImgShow.close();
