@@ -1,0 +1,17 @@
+{
+  "name": "IonicImgEnableShow",
+  "version": "0.1.0",
+  "description": "An add-on directive and add-on service for the ion-slide-box, that adds tabs to the slide box, known from the Android Material Design specification",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "bingcool",
+  "license": "MIT",
+  "devDependencies": {
+    "angular-hammer": "^2.2.0"
+  }
+}
