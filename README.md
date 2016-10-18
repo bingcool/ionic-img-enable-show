@@ -8,9 +8,12 @@ img-enable-show
 录制时有点问题，出现卡顿
 
 ##用法
+注意：依赖于hammerjs和jquery
 （1）首先我们需要在index.html文件中引入js文件和css文件
 ```html
-    <link rel="stylesheet" type="text/css" href="path/img-enable-show.css">
+    <link rel="stylesheet" type="text/css" href="path/img-enable-show.css">     
+    <script type="text/javascript" src="path/hammer.js"></script>    
+    <script type="text/javascript" src="path/jquery.js"></script>     
     <script type="text/javascript" src="path/img-directive.js"></script>
     <script type="text/javascript" src="path/img-service.js"></script>
 ```
