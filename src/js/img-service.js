@@ -19,6 +19,7 @@ angular.module('starter.imgservices', [])
 .factory('actionImgShow', function($rootScope,$compile,$ionicBody,$ionicPlatform, $ionicHistory) {
 	var obj = {
 		element: null,
+		backbuttonRegistration: null
 	};
 	var fns = {
 		showLargeImg: function(opts) {
@@ -39,8 +40,9 @@ angular.module('starter.imgservices', [])
 		
 			/**
 			*自定义一个硬件返回按钮的注册事件，事件的优先级为102，可以优先关闭图片放大层
+			*返回一个注销该后退按钮动作的函数backbuttonRegistration并赋值全局obj变量
 			*/
-			$ionicPlatform.registerBackButtonAction(function(e) {
+			obj.backbuttonRegistration = $ionicPlatform.registerBackButtonAction(function(e) {
 		        e.preventDefault();
 		        if(actionImgShow.imgIsShow) {
 			          actionImgShow.close(); 
@@ -57,7 +59,11 @@ angular.module('starter.imgservices', [])
 		*/
 		closeLargeImg: function() {
 			this.imgIsShow = false;
-			obj.element.remove();	
+			obj.element.remove();
+			// 执行该注销该后退按钮动作的函数
+			if(obj.backbuttonRegistration) {
+				obj.backbuttonRegistration();	
+			}		
 		},
 		
 	};
