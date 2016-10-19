@@ -1,4 +1,4 @@
-;(function(window, angular, $, undefined) {
+;(function(window, angular, undefined) {
   'use strict';
   var img = angular.module('ng-img', []);
 
@@ -41,7 +41,7 @@
           });
         }
 
-        $('div.img-bar-footer').css({
+        angular.element(document.querySelector('div.img-bar-footer')).css({
           'height':"20%",
           'background-color':"rgb(5, 5, 5)",
           "background-size":'100% 0'
@@ -54,9 +54,10 @@
         /**
         *slide-box的宽度、高度
         */
-        var slideBoxWidth = $('.slider-slides').width();
-        var slideBoxHeight = $('.slider-slides').height();
-
+        // var slideBoxWidth = $('.slider-slides').width();
+        // var slideBoxHeight = $('.slider-slides').height();
+        var slideBoxWidth = document.querySelector('.slider-slides').style.width;
+        var slideBoxHeight = document.querySelector('.slider-slides').style.width;
         /**
         *创建一个hammer对象
         */
@@ -77,11 +78,11 @@
             var translateY = (pinchY / scale) * -1 + 20;
  
             //为slide-box的宽度添加一个slideWith宽度，防止溢出，因为放大一倍
-            if(!$('.slider-slides').hasClass('slide-change-width')) {
-              $('.slider-slides').css({
+            if(!angular.element(document.querySelector('.slider-slides')).hasClass('slide-change-width')) {
+              angular.element(document.querySelector('.slider-slides')).css({
                 "width":slideBoxWidth + slideWidth * (scale - 1)+'px'
               });
-              $('.slider-slides').addClass('slide-change-width');
+              angular.element(document.querySelector('.slider-slides')).addClass('slide-change-width');
             }
 
             /**
@@ -97,7 +98,7 @@
             },100);
 
             // 设置footer透明度等于0.2
-            $('div.img-bar-footer').css({
+            angular.element(document.querySelector('div.img-bar-footer')).css({
               "opacity":"0.2",
             });
         });
@@ -113,10 +114,9 @@
               "transition": "all 200ms ease-in",
             });
             // 设置footer不透明
-            $('div.img-bar-footer').css({
+            angular.element(document.querySelector('div.img-bar-footer')).css({
               "opacity":"1",
             });
-
         });
 
       }
@@ -153,4 +153,4 @@
     };
   }]);
  
-})(window, angular,jQuery);
+})(window, angular);
