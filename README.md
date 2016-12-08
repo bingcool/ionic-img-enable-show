@@ -8,7 +8,7 @@ img-enable-show
 录制时有点问题，出现卡顿
 
 ##用法
-注意：依赖于hammerjs
+注意：依赖于hammerjs,可以应用cdn或者自己下载
 （1）首先我们需要在index.html文件中引入js文件和css文件
 ```html
     <link rel="stylesheet" type="text/css" href="path/img-enable-show.css">     

@@ -13,7 +13,7 @@
           '</div>'+
           '<div class="bar bar-footer img-bar-footer">'+
               '<div class="row">'+
-                '<div class="col" style="color:#ffffff">{{currentLargeImg}}/{{imgsNum}}</div>'+
+                '<div class="col" style="color:#ffffff">{{currentLargeImg}}/{{::imgsNum}}</div>'+
                 '<div class="col"></div>'+
                 '<div class="col"></div>'+
                 '<div class="col" style="color:#ffffff">保存图片</div>'+
@@ -24,7 +24,7 @@
            
   }]);
 
-  img.directive('imgShow',function($compile,$timeout) {
+  img.directive('imgShow',['$compile','$timeout','$ionicGesture',function($compile, $timeout, $ionicGesture) {
     return {
       restrict: 'EA',
       transclude: true,
@@ -41,82 +41,142 @@
           });
         }
 
-        angular.element(document.querySelector('div.img-bar-footer')).css({
-          'height':"20%",
-          'background-color':"rgb(5, 5, 5)",
-          "background-size":'100% 0'
+        var this_img = angular.element($element).find('img').css({
+            "transform-origin":"50% 50%",
+            "-webkit-transform": "scale(1,1)",
+            "transform":"scale(1,1)",
+            "transition": "all 100ms linear",
         });
-        /**
-        *每一个slider的宽度、高度(即图片宽度、高度)
-        */
-        var slideWidth = $element[0].offsetWidth;
-        var slideHeight = $element[0].offsetHeight;
-        /**
-        *slide-box的宽度、高度
-        */
-        // var slideBoxWidth = $('.slider-slides').width();
-        // var slideBoxHeight = $('.slider-slides').height();
-        var slideBoxWidth = document.querySelector('.slider-slides').style.width;
-        var slideBoxHeight = document.querySelector('.slider-slides').style.width;
+
+        var this_imgbar = angular.element(document.querySelector('div.img-bar-footer')).css({
+            'height':"20%",
+            'background-color':"rgb(5, 5, 5)",
+            "background-size":'100% 0'
+        });
+ 
         /**
         *创建一个hammer对象
         */
-        var hammer = new Hammer(angular.element($element)[0]);
+        var hammer = new Hammer($element[0].querySelector('img'));
             hammer.get('pinch').set({ enable: true });
             hammer.add(new Hammer.Pinch());
-
         /**
         *捏开点监听
         */
+        var initScale = 1,
+            // 缩放中心点
+            pinchX    = 0,
+            pinchY    = 0;
+
+        hammer.on("pinchstart",function (e) {
+          // 缩放中心点
+          pinchX = e.center.x;
+          pinchY = e.center.y;
+
+          this_img.css({
+              "transform-origin": +pinchX+'px'+' '+pinchY+'px',
+          });
+
+        });
+
         hammer.on("pinchout", function (e) {
-            var scale = 2;
-            //捏开点
-            var pinchX = e.center.x;
-            var pinchY = e.center.y;
-
-            var translateX = (pinchX / scale) * -1 + 20;
-            var translateY = (pinchY / scale) * -1 + 20;
- 
-            //为slide-box的宽度添加一个slideWith宽度，防止溢出，因为放大一倍
-            if(!angular.element(document.querySelector('.slider-slides')).hasClass('slide-change-width')) {
-              angular.element(document.querySelector('.slider-slides')).css({
-                "width":slideBoxWidth + slideWidth * (scale - 1)+'px'
-              });
-              angular.element(document.querySelector('.slider-slides')).addClass('slide-change-width');
-            }
-
+            var scale = e.scale.toFixed(2) * initScale;
             /**
             *放大动画
             */
-            $timeout(function() {
-              angular.element($element).css({
-                "transformOrigin":"0% 0%",
-                "-webkit-transform":"scale("+scale+","+scale+") translate("+translateX+"px, "+translateY+"px)",
-                "transform":"scale("+scale+","+scale+") translate("+translateX+"px, "+translateY+"px)",
-                "transition": "all 200ms ease-out",
-              });
-            },100);
-
-            // 设置footer透明度等于0.2
-            angular.element(document.querySelector('div.img-bar-footer')).css({
-              "opacity":"0.2",
+            this_img.css({
+              "-webkit-transform": "scale("+scale+","+scale+")",
+              "transform": "scale("+scale+","+scale+")",
+              "transition": "all 100ms linear",
             });
+           
+            // 设置footer透明度等于0.2
+            this_imgbar.css({
+              "opacity": "0.2",
+            });
+            
+        });
+
+        hammer.on("pinchend", function (e) {
+          initScale = e.scale.toFixed(2) * initScale;
+           
         });
         
         /**
         *捏合缩小，回弹原来大小
         */
         hammer.on("pinchin", function (e) {
-            angular.element($element).css({
-              "transformOrigin":"50% 50%",
-              "transform":"scale(0.8,0.8) translate(0,0)",
-              "width":slideWidth+'px',
-              "transition": "all 200ms ease-in",
-            });
+
+            var scale = e.scale.toFixed(2) * initScale;
+
+            if(scale <= 0.8) {
+              this_img.css({
+                "transform-origin": "50% 50%",
+                "-webkit-transform": "scale(0.8,0.8)",
+                "transform": "scale(0.8,0.8)",
+                "transition": "all 200ms linear",
+              });
+
+              initScale = 0.8;
+
+            }else {
+              this_img.css({
+                "transform-origin": "50% 50%",
+                "-webkit-transform": "scale("+scale+","+scale+")",
+                "transform": "scale("+scale+","+scale+")",
+                "transition": "all 200ms linear",
+              });
+
+              initScale = scale;
+            }
             // 设置footer不透明
-            angular.element(document.querySelector('div.img-bar-footer')).css({
+            this_imgbar.css({
               "opacity":"1",
             });
+        });
+
+
+        /**
+        *左滑动事件
+        *图片恢复缩放
+        */
+        var swipeleftFn = function() {
+            if(initScale >1) {
+              this_img.css({
+                "transform-origin":"50% 50%",
+                "-webkit-transform": "scale(1,1)",
+                "transform": "scale(1,1)",
+                "transition": "all 100ms linear",
+              });
+              initScale = 1;
+            }
+
+          };
+        var swipeleft = $ionicGesture.on('swipeleft', swipeleftFn, this_img);
+
+        /**
+        *右滑动事件
+        *图片恢复缩放
+        */
+        var swiperightFn = function() { 
+              if(initScale >1) {
+                this_img.css({
+                  "transform-origin":"50% 50%",
+                  "-webkit-transform": "scale(1,1)",
+                  "transform":"scale(1,1)",
+                  "transition": "all 100ms linear",
+                });
+                initScale = 1;
+            }
+          };
+
+        var swiperight = $ionicGesture.on('swiperight', swiperightFn, this_img);
+
+        // 销毁作用域时解绑手势事件
+        $scope.$on("$destroy", function() {
+            $ionicGesture.off(swipeleft, 'swipeleft', swipeleftFn);
+            $ionicGesture.off(swiperight, 'swiperight', swiperightFn);
+            $scope.$destroy();
         });
 
       }
